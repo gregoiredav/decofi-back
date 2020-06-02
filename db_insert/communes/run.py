@@ -1,3 +1,4 @@
+import os
 import sys
 
 import pandas as pd
@@ -10,7 +11,7 @@ from db_insert.utils import time_operation
 
 DATAFILE_NOM = sys.argv[1]
 DATAFILE_POP = sys.argv[2]
-DATABASE = "sqlite:///app/data.db"
+DATABASE = os.getenv("DATABASE_URL", "sqlite:///app/data.db")
 
 
 @time_operation
@@ -43,7 +44,7 @@ def main(db_session):
 
     # merge nom and pop
     df = df_nom.merge(df_pop, how='left', on='code_insee').sort_values(by='population', ascending=False)
-
+    df.fillna(-1, inplace=True)
     # create table and insert data
 
     communes = df.apply(CommuneModel.init_from_row, axis=1).values

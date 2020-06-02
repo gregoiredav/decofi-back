@@ -47,7 +47,7 @@ class BalanceModel(Base):
     id = Column(Integer, primary_key=True, index=True)
     budget_id = Column(Integer, ForeignKey('budgets.id'), index=True)
     compte = Column(String(10))
-    fonction_id = Column(String(10), ForeignKey('fonctions.id'))
+    fonction_id = Column(Integer, ForeignKey('fonctions.id'))
     sd = Column(Float(precision=2))
     sc = Column(Float(precision=2))
     oobdeb = Column(Float(precision=2))

@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -5,7 +7,7 @@ from db_insert.models import AggregatComptesModel, FonctionModel, Base
 from db_insert.nomenclatures import LIBELLES_FONCTIONS, AGGREGATS_COMPTES
 
 
-DATABASE = "sqlite:///app/data.db"
+DATABASE = os.getenv("DATABASE_URL", "app/data.db")
 
 
 engine = create_engine(DATABASE)
