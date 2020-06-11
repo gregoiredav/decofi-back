@@ -1,4 +1,9 @@
-AGGREGATS_COMPTES = {
+AGGREGATS_COMPTE_DEPENSES = {
+    -1: {
+        'libelle': 'Pas une dépense',
+        'comptes_a_inclure': [],
+        'comptes_a_exclure': [],
+    },
     1: {
         'libelle': 'Achats et charges externes',
         'comptes_a_inclure': ['60', '61', '62'],

@@ -1,19 +1,19 @@
 from functools import reduce
-from db_insert.nomenclatures import AGGREGATS_COMPTES, MODES_DE_CALCUL_DEPENSES
+from manage_db.compta import AGGREGATS_COMPTE_DEPENSES, MODES_DE_CALCUL_DEPENSES
 
 import pandas as pd
 
 
-def creer_aggregat_id(ligne):
-    for code, aggregat in AGGREGATS_COMPTES.items():
+def creer_aggregat_depenses_id(ligne):
+    for code, aggregat in AGGREGATS_COMPTE_DEPENSES.items():
         comptes_a_inclure = aggregat['comptes_a_inclure']
         comptes_a_exclure = aggregat['comptes_a_exclure']
-        if flag_aggregat(ligne, comptes_a_inclure, comptes_a_exclure):
+        if flag_aggregat_depenses(ligne, comptes_a_inclure, comptes_a_exclure):
             return code
-    return None
+    return -1
 
 
-def flag_aggregat(ligne, a_inclure, a_exclure):
+def flag_aggregat_depenses(ligne, a_inclure, a_exclure):
     flag = False
     for compte in a_inclure:
         if ligne.startswith(compte):
@@ -25,11 +25,14 @@ def flag_aggregat(ligne, a_inclure, a_exclure):
 
 
 def calcul_depenses_par_aggregat(df):
+    """
+    Calcule la dépense sur un compte en utilisant le bon mode de calcul pour cet aggrégat de dépense
+    """
     modes_de_calcul = MODES_DE_CALCUL_DEPENSES(df)
     for mode_de_calcul in modes_de_calcul:
         aggregats_id = mode_de_calcul['aggregats_id']
         calcul_depenses = mode_de_calcul['calcul']
-        df.loc[df['aggregat_comptes_id'].isin(aggregats_id), 'depenses'] = calcul_depenses
+        df.loc[df['aggregat_depenses_id'].isin(aggregats_id), 'depense'] = calcul_depenses
     return df
 
 

@@ -11,8 +11,8 @@ class FonctionModel(db.Model):
         return {"id": self.id, "libelle": self.libelle}
 
 
-class AggregatComptesModel(db.Model):
-    __tablename__ = "aggregats_comptes"
+class AggregatDepensesModel(db.Model):
+    __tablename__ = "aggregats_depenses"
 
     id = db.Column(db.Integer, primary_key=True)
     libelle = db.Column(db.String(255))

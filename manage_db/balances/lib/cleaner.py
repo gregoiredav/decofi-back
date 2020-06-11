@@ -1,9 +1,25 @@
+DEPT_OUTREMER = ['101', '102', '103', '104', '106']
+
+
 class Cleaner(object):
+    """
+    Cette classe inclut un certain nombre de fonctions crées pour nettoyer les données des balances comptables des
+    collectivités locales, une fois le csv converti au format Pandas DataFrame.
+
+    Elle est initiée avec un dictionnaire qui associe un nom de colonne de DataFrame à une fonction qui sera appliquée
+    à chaque colonne.
+    """
 
     def __init__(self, actions):
         self.actions = actions
 
     def clean(self, df):
+        """
+        Applique les différentes fonctions du Cleaner.
+
+        :param df: pandas DataFrame contenant les balances comptables.
+        :return: clean DataFrame
+        """
         for col, action in self.actions.items():
             df[col] = df[col].apply(action)
         return df
@@ -31,6 +47,6 @@ class Cleaner(object):
 
     @staticmethod
     def ndept(ligne):
-        if ligne.startswith('0'):
-            ligne = ligne[1:]
-        return ligne
+        if ligne in DEPT_OUTREMER:
+            ligne = "097"
+        return ligne[1:]

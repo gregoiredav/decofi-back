@@ -1,22 +1,32 @@
 from app import db
 
 
-class AggregatDepensesModel(db.Model):
-    __tablename__ = "aggregats_depenses"
+class DepenseAggregeeModel(db.Model):
+    __tablename__ = "depenses_aggregees"
 
-    id = db.Column(db.Integer, primary_key=True)
-    budget_id = db.Column(db.Integer, db.ForeignKey('budgets.id'))
-    aggregat_comptes_id = db.Column(db.Integer, db.ForeignKey('aggregats_comptes.id'))
+    id = db.Column(db.String(14), primary_key=True)
+    budget_id = db.Column(db.String(10), db.ForeignKey('budgets.id'))
+    aggregat_depenses_id = db.Column(db.Integer, db.ForeignKey('aggregats_depenses.id'))
     fonction_id = db.Column(db.Integer, db.ForeignKey('fonctions.id'))
-    depenses = db.Column(db.Float(precision=2))
+    depenses_somme = db.Column(db.Float)
+
     fonction = db.relationship('FonctionModel', lazy='select')
-    aggregat_comptes = db.relationship('AggregatComptesModel', lazy='select')
+    aggregat_depenses = db.relationship('AggregatDepensesModel', lazy='select')
+
+    def __init__(self, code_insee, exercice, **data):
+
+        self.budget_id = '_'.join([code_insee, str(exercice)])
+        self.id = '_'.join([self.budget_id, str(data['aggregat_depenses_id']), str(data['fonction_id'])])
+
+        self.aggregat_depenses_id = data['aggregat_depenses_id']
+        self.fonction_id = data['fonction_id']
+        self.depenses_somme = data['depenses_somme']
 
     def json(self):
         return {
             'budget_id': self.budget_id,
-            'depenses': self.depenses,
-            'aggregat_comptes': self.aggregat_comptes.json(),
+            'depenses_somme': self.depenses_somme,
+            'aggregat_depenses': self.aggregat_depenses.json(),
             'fonction': self.fonction.json(),
         }
 
@@ -24,20 +34,28 @@ class AggregatDepensesModel(db.Model):
 class BudgetModel(db.Model):
     __tablename__ = 'budgets'
 
-    id = db.Column(db.Integer, primary_key=True)
-    exercice = db.Column(db.Integer, index=True)
-    code_insee = db.Column(db.Integer, db.ForeignKey('collectivites.code_insee'), index=True)
-    balances = db.relationship('BalanceModel', lazy='dynamic')
-    aggregats_depenses = db.relationship('AggregatDepensesModel', lazy='dynamic')
+    id = db.Column(db.String(11), primary_key=True)
+    exercice = db.Column(db.Integer)
+    code_insee = db.Column(db.String(6), db.ForeignKey('collectivites.code_insee'))
 
-    def json(self, return_aggregates=True, return_balances=False):
+    balances = db.relationship('BalanceModel', lazy='select', cascade="all, delete-orphan")
+    depenses_aggregees = db.relationship('DepenseAggregeeModel', lazy='dynamic', cascade="all, delete-orphan")
+
+    def __init__(self, code_insee, exercice, balances, depenses_aggregees):
+        self.id = '_'.join([code_insee, str(exercice)])
+        self.code_insee = code_insee
+        self.exercice = exercice
+        self.balances = balances
+        self.depenses_aggregees = depenses_aggregees
+
+    def json(self, return_depenses_aggregees=False, return_balances=False):
         payload = {
             'id': self.id,
             'code_insee': self.code_insee,
             'exercice': self.exercice,
         }
-        if return_aggregates:
-            payload['aggregats_depenses'] = [balance.json() for balance in self.aggregats_depenses]
+        if return_depenses_aggregees:
+            payload['depenses_aggregees'] = [depense.json() for depense in self.depenses_aggregees]
         if return_balances:
             payload['balances'] = [balance.json() for balance in self.balances]
         return payload
@@ -49,11 +67,3 @@ class BudgetModel(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
-
-    @classmethod
-    def find_by_collectivite_and_year(cls, collectivite_id, annee):
-        return (
-            cls.query
-            .filter_by(collectivite_id=collectivite_id, annee=annee)
-            .first()
-        )

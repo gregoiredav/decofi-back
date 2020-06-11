@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
 
@@ -17,18 +18,13 @@ def create_app():
     # Initializing plugins
     db.init_app(app)
     api = Api(app)
-
-    #
+    migrate = Migrate(app, db)
 
     # Registering resources
-    from app.resources.balance import Balance
     from app.resources.budget import Budget
     from app.resources.collectivite import Collectivite
-    from app.resources.commune import CommuneList
 
-    api.add_resource(Balance, '/balances/<int:_id>')
-    api.add_resource(Budget, '/budgets/<int:_id>')
+    api.add_resource(Budget, '/budgets/<string:code_insee>/<int:exercice>')
     api.add_resource(Collectivite, '/collectivites/<string:code_insee>')
-    api.add_resource(CommuneList, '/communes')
 
     return app
