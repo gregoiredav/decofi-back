@@ -1,6 +1,6 @@
 # ***** En construction *****
 
-L'objectif de cette repo est de faciliter l'accès à la données des balances comptables des collectivités territoriales, 
+L'objectif de cette repo est de faciliter l'accès aux données des balances comptables des collectivités territoriales (seulement disponible sous force de CSV gigantesques), 
 et graduellement d'y ajouter des ressources de nomenclature afin d'en faciliter la compréhension. 
 
 Pour l'instant, 2 abstractions de haut-niveau sont proposée:
