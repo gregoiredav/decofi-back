@@ -3,8 +3,9 @@ venv/
 .DS_Store
 .ipynb_checkpoints/
 __pycache__/
-data/*
 *.csv
+*.zip
+*.pickle
 *.ipynb
 *.db
 log/
