@@ -8,5 +8,5 @@ __pycache__/
 *.pickle
 *.ipynb
 *.db
-log/
+.logs/
 migrations/
