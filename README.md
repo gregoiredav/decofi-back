@@ -9,7 +9,7 @@ Pour l'instant, 2 abstractions de haut-niveau sont proposée:
 
 Les instructions ci-dessous concernent:
 - l'utilisation de l'API existante
-- instruction pour re-créer l'API ci-besoin
+- comment utiliser le code pour recréer cette API
 
 ## Tester l'API
 
@@ -18,11 +18,13 @@ L'API offre pour l'instant les ressources suivantes:
 #### Pour une collectivité, requête des identifiants de budgets et des aggrégats de dépenses pour ces budgets
 
 Exemple: requête du budget de la commune avec code insee 31555 (Toulouse).
+
 `http://3.122.51.179/collectivites/31555`
 
 #### Pour un exercice budgétaire, requête du détail des balances comptables
 
 Exemple: requête du détail des balances comptables pour l'exercice 2018 à Toulouse
+
 `http://3.122.51.179/budgets/31555/2018`
 
 ## Utiliser le code
