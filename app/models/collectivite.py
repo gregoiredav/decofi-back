@@ -5,7 +5,7 @@ class CollectiviteModel(db.Model):
 
     __tablename__ = 'collectivites'
 
-    code_insee = db.Column(db.String(5), primary_key=True)
+    code_insee = db.Column(db.String(20), primary_key=True)
     categorie = db.Column(db.String(255), index=True)
     sous_categorie = db.Column(db.String(255))
     nom = db.Column(db.String(255), index=True)

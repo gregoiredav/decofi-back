@@ -5,8 +5,8 @@ class BalanceModel(db.Model):
     __tablename__ = 'balances'
 
     id = db.Column(db.Integer, primary_key=True)
-    budget_id = db.Column(db.String(11), db.ForeignKey('budgets.id'), index=True)
-    compte = db.Column(db.String(10))
+    budget_id = db.Column(db.String(20), db.ForeignKey('budgets.id'), index=True)
+    compte = db.Column(db.String(20))
     fonction_id = db.Column(db.Integer, db.ForeignKey('fonctions.id'))
     sd = db.Column(db.Float(precision=2))
     sc = db.Column(db.Float(precision=2))

@@ -4,8 +4,8 @@ from app import db
 class DepenseAggregeeModel(db.Model):
     __tablename__ = "depenses_aggregees"
 
-    id = db.Column(db.String(14), primary_key=True)
-    budget_id = db.Column(db.String(10), db.ForeignKey('budgets.id'))
+    id = db.Column(db.String(20), primary_key=True)
+    budget_id = db.Column(db.String(20), db.ForeignKey('budgets.id'))
     aggregat_depenses_id = db.Column(db.Integer, db.ForeignKey('aggregats_depenses.id'))
     fonction_id = db.Column(db.Integer, db.ForeignKey('fonctions.id'))
     depenses_somme = db.Column(db.Float)
@@ -34,9 +34,9 @@ class DepenseAggregeeModel(db.Model):
 class BudgetModel(db.Model):
     __tablename__ = 'budgets'
 
-    id = db.Column(db.String(11), primary_key=True)
+    id = db.Column(db.String(20), primary_key=True)
     exercice = db.Column(db.Integer)
-    code_insee = db.Column(db.String(6), db.ForeignKey('collectivites.code_insee'))
+    code_insee = db.Column(db.String(20), db.ForeignKey('collectivites.code_insee'))
 
     balances = db.relationship('BalanceModel', lazy='select', cascade="all, delete-orphan")
     depenses_aggregees = db.relationship('DepenseAggregeeModel', lazy='dynamic', cascade="all, delete-orphan")
