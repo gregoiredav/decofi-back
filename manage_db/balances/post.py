@@ -8,6 +8,7 @@ from manage_db.utils import batch_dataframe, time_operation
 
 
 PICKLE_FILE = sys.argv[1]
+API_URL = sys.argv[2]
 N_BATCHES = 30
 
 
@@ -96,13 +97,13 @@ def post_budgets(budgets):
     for data in budgets_data:
         code_insee = data.pop('code_insee')
         exercice = data.pop('exercice')
-        response = requests.post(f'http://127.0.0.1:5000/budgets/{code_insee}/{exercice}', json=data)
+        response = requests.post(f'{API_URL}/budgets/{code_insee}/{exercice}', json=data)
         if response.status_code != 201:
             logging.debug(f"Error for {code_insee}: {response.content}")
 
 
 def main():
-    logging.basicConfig(filename='post_balances.log', level=logging.DEBUG)
+    logging.basicConfig(filename='manage_db/.logs/post_balances.log', level=logging.DEBUG)
 
     # lecture et batching
     df = pd.read_pickle(PICKLE_FILE)

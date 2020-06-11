@@ -9,6 +9,7 @@ from manage_db.utils import time_operation
 
 DATAFILE_NOM = sys.argv[1]
 DATAFILE_POP = sys.argv[2]
+API_URL = sys.argv[3]
 
 
 @time_operation
@@ -59,12 +60,14 @@ def upsert_collectivites(collectivites):
     for collectivite in collectivites:
         data = collectivite.copy()
         code_insee = data.pop('code_insee')
-        response = requests.put(f'http://127.0.0.1:5000/collectivites/{code_insee}', json=data)
+        response = requests.put(f'{API_URL}/collectivites/{code_insee}', json=data)
         if response.status_code != 201:
             logging.debug(f"Error for {code_insee}: {response.content}")
 
 
 def main():
+    logging.basicConfig(filename='manage_db/.logs/post_collectivites.log', level=logging.DEBUG)
+
     df = process_csv_data()
     collectivites = df.to_dict(orient='records')
     upsert_collectivites(collectivites)
