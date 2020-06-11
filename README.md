@@ -1,42 +1,55 @@
 # ***** En construction *****
 
-## API
+L'objectif de cette repo est de faciliter l'accès à la données des balances comptables des collectivités territoriales, 
+et graduellement d'y ajouter des ressources de nomenclature afin d'en faciliter la compréhension. 
+
+Pour l'instant, 2 abstractions de haut-niveau sont proposée:
+- la fonction (code fonction et libellé)
+- des aggrégats de compte correspondant à des types de dépenses
+
+Les instructions ci-dessous concernent:
+- l'utilisation de l'API existante
+- instruction pour re-créer l'API ci-besoin
+
+## Tester l'API
 
 L'API offre pour l'instant les ressources suivantes:
 
-#### - Recherche de code insee par nom de commune
-
-Exemple: communes contenant les lettres "Toulo", classées par ordre de population (max 100 résultats).
-`http://3.122.51.179/communes?inputValue=Toulo`
-
-#### - Requête des identifiants de budgets et dese aggrégats de dépenses par collectivite
+#### Pour une collectivité, requête des identifiants de budgets et des aggrégats de dépenses pour ces budgets
 
 Exemple: requête du budget de la commune avec code insee 31555 (Toulouse).
-`http://3.122.51.179/collectivites/`
+`http://3.122.51.179/collectivites/31555`
 
-#### - Requête du détail des balances comptables pour un exercice budgétaire
+#### Pour un exercice budgétaire, requête du détail des balances comptables
 
-`http://3.122.51.179/collectivites/<budget_id>`
+Exemple: requête du détail des balances comptables pour l'exercice 2018 à Toulouse
+`http://3.122.51.179/budgets/31555/2018`
 
-## Data processing
+## Utiliser le code
 
-Le dossier db_inserts contient les scripts qui créent la base de donnée de l'API
+Cloner le repo:
 
-#### Nomenclatures
+`git clone https://github.com/gregoiredav/decofi-back.git`
 
-Le script initie les bases de données et crée les tables contenant les libellés des fonctions et des aggrégats de dépense.
+Une fois le repo cloné, un script permet de créer la base de donnée et de télécharger les données brutes:
 
-`python3 db_inserts/nomenclatures/run.py`
+`source bootstrap.sh`
 
-#### Communes
-Le script prend comme argument (dans l'ordre):
-- la liste des communes ([source INSEE](https://www.insee.fr/fr/information/4316069))
-- la population des communes ([source INSEE](https://www.insee.fr/fr/statistiques/4265429?sommaire=4265511))
+Le dossier `manage_db` contient ensuite des ressources pour mettre en forme les données, et les insérer dans la base
+de donnée via des endpoints de type `POST` ou `PUT`. Les étapes pour créer une base de donnée en ordre de marche seraient:
 
-`python3 db_inserts/communes/run.py <fichier communes> <fichier population>`
+(1) Remplir les tables de type nomenclature.
 
-#### Balances comptables
-Le script processe les balances des collectivités ([Source data.gouv](https://www.data.gouv.fr/fr/datasets/balances-comptables-des-collectivites-et-des-etablissements-publics-locaux-avec-la-presentation-croisee-nature-fonction-2017/)), identifie les dépenses et les aggrège par commune et par exercice budgétaire.
+`python3 manage_db/nomenclatures/create.py`
 
-`python3 db_inserts/balances/run.py <fichier balances>`
+(2) Traiter les CSV de l'insee pour insérer les collectivités dans la base de donnée (via le webserver, qui doit être up)
 
+`python3 manage_db/collectivites/post.py data/csv/insee_codes.csv data/csv/insee_population.csv <adresse du webserver>`
+
+(3) Nettoyer le csv des balances comptables et sauver les données préparées sous format pickle (example pour les balances 2016)
+
+`python3 manage_db/balances/process_csv.py data/csv/BalanceSPL_Fonction_2016_Juin2019.csv balances_2016.pickle`
+
+(4) Traiter un fichier .pickle de balances, et insérer les données dans la base de donnée (via le webserver) 
+
+`python3 manage_db/balances/post.py data/pickle/balances_2018.pickle <adresse du webserver>`

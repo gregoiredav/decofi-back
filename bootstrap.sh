@@ -1,6 +1,3 @@
-git checkout master
-git pull
-
 # installation des packages
 python3 -m venv venv
 source venv/bin/activate
