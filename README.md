@@ -17,15 +17,15 @@ L'API offre pour l'instant les ressources suivantes:
 
 #### Pour une collectivité, requête des identifiants de budgets et des aggrégats de dépenses pour ces budgets
 
-Exemple: requête du budget de la commune avec code insee 31555 (Toulouse).
+Exemple: requête du budget de la commune avec code insee 01034 (commune de Belley).
 
-`http://3.122.51.179/collectivites/31555`
+`http://3.122.51.179/collectivites/01034`
 
 #### Pour un exercice budgétaire, requête du détail des balances comptables
 
-Exemple: requête du détail des balances comptables pour l'exercice 2018 à Toulouse
+Exemple: requête du détail des balances comptables pour l'exercice 2018 à Belley
 
-`http://3.122.51.179/budgets/31555/2018`
+`http://3.122.51.179/budgets/01034/2018`
 
 ## Utiliser le code
 
