@@ -13,7 +13,7 @@ class Budget(Resource):
         budget = BudgetModel.query.get(budget_id)
         if not budget:
             return {"message": "Ce budget n'existe pas dans la base de donnée"}, 404
-        return budget.json(return_depenses_aggregees=True, return_balances=False)
+        return budget.json(return_depenses_aggregees=False, return_balances=True)
 
     @staticmethod
     def post(code_insee, exercice):
@@ -31,7 +31,7 @@ class Budget(Resource):
         depenses_aggregees = [DepenseAggregeeModel(code_insee, exercice, **data) for data in depenses_aggregees_data]
         budget = BudgetModel(code_insee, exercice, balances, depenses_aggregees)
         budget.save_to_db()
-        return budget.json(return_depenses_aggregees=True, return_balances=False), 201
+        return budget.json(return_depenses_aggregees=False, return_balances=False), 201
 
     @staticmethod
     def delete(code_insee, exercice):

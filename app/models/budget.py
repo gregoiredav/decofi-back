@@ -48,7 +48,7 @@ class BudgetModel(db.Model):
         self.balances = balances
         self.depenses_aggregees = depenses_aggregees
 
-    def json(self, return_depenses_aggregees=False, return_balances=False):
+    def json(self, return_depenses_aggregees=True, return_balances=False):
         payload = {
             'id': self.id,
             'code_insee': self.code_insee,
