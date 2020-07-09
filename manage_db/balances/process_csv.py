@@ -7,10 +7,6 @@ from manage_db.balances.lib.cleaner import Cleaner
 from manage_db.balances.lib.compta import (flag_vote_par_nature, correction_vote_par_nature, creer_aggregat_depenses_id,
                                            calcul_depenses_par_aggregat)
 
-CSV_PATH = sys.argv[1]
-PICKLE_PATH = sys.argv[2]
-CATEGORIES = ['Commune']
-
 
 @time_operation
 def lecture_csv(file_path):
@@ -24,7 +20,7 @@ def lecture_csv(file_path):
 
 
 @time_operation
-def nettoyer_données(df):
+def nettoyer_donnees(df):
     """
     Nettoie les données du csv, change les noms de colonnes.
 
@@ -32,7 +28,7 @@ def nettoyer_données(df):
     :return: pandas DataFrame contenant les données nettoyées
     """
     # conserver les colonnes d'interets et passer leurs noms en minuscule
-    df = df[['EXER', 'INSEE', 'FONCTION', 'COMPTE', 'NDEPT', 'OOBDEB', 'OOBCRE', 'SD', 'SC', 'OBNETDEB', 'OBNETCRE']]
+    df = df[['EXER', 'INSEE', 'FONCTION', 'COMPTE', 'NDEPT', 'OOBDEB', 'OOBCRE', 'SD', 'SC', 'OBNETDEB', 'OBNETCRE', 'LBUDG', 'CTYPE']]
     df = df.rename(lambda colname: colname.lower(), axis=1)
     df = df.rename(columns={'exer': 'exercice'})
 
@@ -77,11 +73,11 @@ def corriger_fonction(df):
     return df
 
 
-def main():
-    raw_df = lecture_csv(CSV_PATH)
+def main(csv_path, pickle_path, categories):
+    raw_df = lecture_csv(csv_path)
     # filter les communes
-    raw_df = raw_df[raw_df['CATEG'].isin(CATEGORIES)]
-    clean_df = nettoyer_données(raw_df)
+    raw_df = raw_df[raw_df['CATEG'].isin(categories)]
+    clean_df = nettoyer_donnees(raw_df)
     # créer le code INSEE
     clean_df['code_insee'] = clean_df['ndept'] + clean_df['insee']
     df = creer_aggregats_de_depenses(clean_df)
@@ -89,9 +85,12 @@ def main():
     # créer une colonne id
     df.reset_index(inplace=True)
     df['id'] = df.apply(lambda row: '_'.join([str(row['exercice']), str(row['index'])]), axis=1)
-    df.to_pickle(PICKLE_PATH)
-    print(f"Pickle file sauvegardé au path suivant: {PICKLE_PATH}")
+    df.to_pickle(pickle_path)
+    print(f"Pickle file sauvegardé au path suivant: {pickle_path}")
 
 
 if __name__ == "__main__":
-    main()
+    CSV_PATH = sys.argv[1]
+    PICKLE_PATH = sys.argv[2]
+    CATEGORIES = ['Commune']
+    main(CSV_PATH, PICKLE_PATH, CATEGORIES)

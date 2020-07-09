@@ -7,20 +7,15 @@ import pandas as pd
 from manage_db.utils import time_operation
 
 
-DATAFILE_NOM = sys.argv[1]
-DATAFILE_POP = sys.argv[2]
-API_URL = sys.argv[3]
-
-
 @time_operation
-def process_csv_data():
+def process_csv_data(insee_codes_fp, insee_population_fp):
     """
     Lecture des csv de l'INSEE pour rassembler les données à poster vers l'API.
 
     :return: pd.DataFrame contenant l'information sur les collectivités
     """
     df_nom = pd.read_csv(
-        filepath_or_buffer=DATAFILE_NOM,
+        filepath_or_buffer=insee_codes_fp,
         sep=',',
         encoding="utf-8",
         dtype=str,
@@ -33,7 +28,7 @@ def process_csv_data():
 
     # read and process population file
     df_pop = pd.read_csv(
-        filepath_or_buffer=DATAFILE_POP,
+        filepath_or_buffer=insee_population_fp,
         sep=';',
         encoding="utf-8",
         dtype=str,
@@ -51,7 +46,7 @@ def process_csv_data():
 
 
 @time_operation
-def upsert_collectivites(collectivites):
+def upsert_collectivites(collectivites, api_url):
     """
     Charge les collectivités dans la base de donnée via des requêtes PUT.
 
@@ -60,18 +55,21 @@ def upsert_collectivites(collectivites):
     for collectivite in collectivites:
         data = collectivite.copy()
         code_insee = data.pop('code_insee')
-        response = requests.put(f'{API_URL}/collectivites/{code_insee}', json=data)
+        response = requests.put(f'{api_url}/collectivites/{code_insee}', json=data)
         if response.status_code != 201:
             logging.debug(f"Error for {code_insee}: {response.content}")
 
 
-def main():
+def main(insee_codes_fp, insee_population_fp, api_url):
     logging.basicConfig(filename='manage_db/.logs/post_collectivites.log', level=logging.DEBUG)
 
-    df = process_csv_data()
+    df = process_csv_data(insee_codes_fp, insee_population_fp)
     collectivites = df.to_dict(orient='records')
-    upsert_collectivites(collectivites)
+    upsert_collectivites(collectivites, api_url)
 
 
 if __name__ == "__main__":
-    main()
+    INSEE_CODE_FP = sys.argv[1]
+    INSEE_POPULATION_FP = sys.argv[2]
+    API_URL = sys.argv[3]
+    main(INSEE_CODE_FP, INSEE_POPULATION_FP, API_URL)
